@@ -5,6 +5,9 @@ import { ManagerLayout, StaffLayout } from './components/Layout'
 import { AuthProvider, useAuth } from './lib/auth'
 import Login from './pages/Login'
 import SetPassword from './pages/SetPassword'
+import Home from './pages/staff/Home'
+import Scan from './pages/staff/Scan'
+import ScanProject from './pages/staff/ScanProject'
 
 function RequireAuth({ children, manager = false }: { children: ReactNode; manager?: boolean }) {
   const { session, profile, loading } = useAuth()
@@ -27,7 +30,9 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/set-password" element={<SetPassword />} />
           <Route element={<RequireAuth><StaffLayout /></RequireAuth>}>
-            <Route index element={null} />
+            <Route index element={<Home />} />
+            <Route path="scan" element={<Scan />} />
+            <Route path="scan/:code" element={<ScanProject />} />
           </Route>
           <Route path="/manager" element={<RequireAuth manager><ManagerLayout /></RequireAuth>}>
             <Route index element={null} />

@@ -90,3 +90,4 @@ dialog::backdrop { background: rgba(0, 0, 0, .35); }
   .content { padding: 0; max-width: none; }
   body { background: #fff; }
 }
+.no-underline { text-decoration: none; }
