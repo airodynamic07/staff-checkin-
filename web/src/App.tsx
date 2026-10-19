@@ -5,7 +5,9 @@ import { ManagerLayout, StaffLayout } from './components/Layout'
 import { AuthProvider, useAuth } from './lib/auth'
 import Login from './pages/Login'
 import SetPassword from './pages/SetPassword'
+import Export from './pages/manager/Export'
 import OnSite from './pages/manager/OnSite'
+import ProjectSummary from './pages/manager/ProjectSummary'
 import Review from './pages/manager/Review'
 import Timetable from './pages/manager/Timetable'
 import History from './pages/staff/History'
@@ -44,7 +46,9 @@ export default function App() {
           <Route path="/manager" element={<RequireAuth manager><ManagerLayout /></RequireAuth>}>
             <Route index element={<OnSite />} />
             <Route path="timetable" element={<Timetable />} />
+            <Route path="summary" element={<ProjectSummary />} />
             <Route path="review" element={<Review />} />
+            <Route path="export" element={<Export />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
