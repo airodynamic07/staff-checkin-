@@ -1,5 +1,6 @@
 // Every call the app makes to Supabase. Errors are thrown as ApiError with the
 // short code raised by the database functions (see supabase/migrations).
+import { fetchAllPages } from './paging'
 import { bangkokMidnight, addDays } from './time'
 import { supabase } from './supabase'
 import type { Position } from './geo'
@@ -43,10 +44,11 @@ export async function getOpenVisit(): Promise<VisitWithProject | null> {
   return data as VisitWithProject | null
 }
 
+/** Looks the code up even if the project is archived, so the scan page can say it is closed. */
 export async function getProjectByCode(code: string): Promise<Project | null> {
-  const { data, error } = await supabase.from('projects').select('*').eq('code', code).maybeSingle()
+  const { data, error } = await supabase.rpc('project_by_code', { p_code: code })
   if (error) fail(error)
-  return data as Project | null
+  return (data as Project | null) ?? null
 }
 
 export interface ScanInResult {
@@ -94,12 +96,16 @@ export async function listMyVisits(from: string, to: string): Promise<VisitWithP
 
 export async function listVisits(filter: { from: string; to: string; userId?: string; projectId?: string }): Promise<VisitFull[]> {
   const [start, end] = utcRange(filter.from, filter.to)
-  let q = supabase.from('visits').select(VISIT_FULL).gte('check_in_at', start).lt('check_in_at', end)
-  if (filter.userId) q = q.eq('user_id', filter.userId)
-  if (filter.projectId) q = q.eq('project_id', filter.projectId)
-  const { data, error } = await q.order('check_in_at')
-  if (error) fail(error)
-  return data as VisitFull[]
+  try {
+    return await fetchAllPages<VisitFull>((lo, hi) => {
+      let q = supabase.from('visits').select(VISIT_FULL).gte('check_in_at', start).lt('check_in_at', end)
+      if (filter.userId) q = q.eq('user_id', filter.userId)
+      if (filter.projectId) q = q.eq('project_id', filter.projectId)
+      return q.order('check_in_at').order('id').range(lo, hi).returns<VisitFull[]>()
+    })
+  } catch (e) {
+    fail(e as { message?: string })
+  }
 }
 
 export async function listOpenVisits(): Promise<VisitFull[]> {
@@ -109,12 +115,16 @@ export async function listOpenVisits(): Promise<VisitFull[]> {
 }
 
 export async function listUnreviewedAutoClosed(): Promise<VisitFull[]> {
-  const { data, error } = await supabase
-    .from('visits').select(VISIT_FULL)
-    .not('auto_closed', 'is', null).is('edited_at', null)
-    .order('check_in_at', { ascending: false })
-  if (error) fail(error)
-  return data as VisitFull[]
+  try {
+    return await fetchAllPages<VisitFull>((lo, hi) =>
+      supabase
+        .from('visits').select(VISIT_FULL)
+        .not('auto_closed', 'is', null).is('edited_at', null)
+        .order('check_in_at', { ascending: false }).order('id').range(lo, hi).returns<VisitFull[]>(),
+    )
+  } catch (e) {
+    fail(e as { message?: string })
+  }
 }
 
 export function subscribeVisits(onChange: () => void): () => void {

@@ -44,10 +44,15 @@ export class FakeSupabase {
     return !!u && this.profiles.some((p) => p.id === u.id && p.role === 'manager')
   }
 
-  private visitFull(v: Row): Row {
+  private canSeeProject(p: Row, u: User): boolean {
+    return this.isManager(u) || !p.archived || this.visits.some((v) => v.project_id === p.id && v.user_id === u.id)
+  }
+
+  private visitFull(v: Row, u: User): Row {
+    const project = this.projects.find((p) => p.id === v.project_id)
     return {
       ...v,
-      project: this.projects.find((p) => p.id === v.project_id),
+      project: project && this.canSeeProject(project, u) ? project : null,
       profile: this.profiles.find((p) => p.id === v.user_id),
     }
   }
@@ -68,7 +73,7 @@ export class FakeSupabase {
   private filter(rows: Row[], params: URLSearchParams): Row[] {
     return rows.filter((r) => {
       for (const [key, raw] of params) {
-        if (['select', 'order', 'limit'].includes(key)) continue
+        if (['select', 'order', 'limit', 'offset'].includes(key)) continue
         const value = r[key]
         const [op, ...rest] = raw.split('.')
         const arg = rest.join('.')
@@ -142,6 +147,7 @@ export class FakeSupabase {
         return this.json(route, 200, v)
       }
       if (fn === 'is_manager') return this.json(route, 200, this.isManager(user))
+      if (fn === 'project_by_code') return this.json(route, 200, this.projects.find((p) => p.code === body.p_code) ?? null)
       return this.json(route, 404, { message: `no rpc ${fn}` })
     }
 
@@ -151,8 +157,8 @@ export class FakeSupabase {
     const manager = this.isManager(user)
     let rows: Row[]
     if (table === 'profiles') rows = this.profiles.filter((p) => manager || p.id === user.id)
-    else if (table === 'projects') rows = this.projects.filter((p) => manager || !p.archived)
-    else if (table === 'visits') rows = this.visits.filter((v) => manager || v.user_id === user.id).map((v) => this.visitFull(v))
+    else if (table === 'projects') rows = this.projects.filter((p) => this.canSeeProject(p, user))
+    else if (table === 'visits') rows = this.visits.filter((v) => manager || v.user_id === user.id).map((v) => this.visitFull(v, user))
     else return this.json(route, 404, { message: `no table ${table}` })
 
     if (req.method() === 'PATCH') {
@@ -162,9 +168,12 @@ export class FakeSupabase {
       return this.json(route, 200, [])
     }
 
-    const result = this.filter(rows, url.searchParams).sort((a, b) =>
-      String(a.check_in_at ?? a.name ?? '').localeCompare(String(b.check_in_at ?? b.name ?? '')),
-    )
+    // Like PostgREST: offset/limit from .range(), and never more than max_rows (1000).
+    const offset = Number(url.searchParams.get('offset') ?? 0)
+    const limit = Math.min(Number(url.searchParams.get('limit') ?? 1000), 1000)
+    const result = this.filter(rows, url.searchParams)
+      .sort((a, b) => String(a.check_in_at ?? a.name ?? '').localeCompare(String(b.check_in_at ?? b.name ?? '')))
+      .slice(offset, offset + limit)
     if ((req.headers()['accept'] ?? '').includes('vnd.pgrst.object')) {
       return result.length === 1 ? this.json(route, 200, result[0]) : this.json(route, 406, { message: 'not one row' })
     }

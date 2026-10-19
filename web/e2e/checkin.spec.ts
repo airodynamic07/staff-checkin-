@@ -73,3 +73,21 @@ test('staff checks in and out by QR link; manager sees the timetable and exports
   expect(csv).toContain('Somchai,Site A')
   expect(csv).toContain('2.25,Install tiles,Bathroom floor done')
 })
+
+test('scanning an archived project says it is closed; history keeps its visits', async ({ page }) => {
+  const backend = new FakeSupabase()
+  backend.visits.push({
+    id: 'old', user_id: 'u-staff', project_id: 'p-b', check_in_at: new Date(Date.now() - 3 * 3600e3).toISOString(),
+    check_out_at: new Date(Date.now() - 2 * 3600e3).toISOString(), task: 'Old job', work_done: null,
+    in_lat: null, in_lng: null, in_accuracy_m: null, out_lat: null, out_lng: null, out_accuracy_m: null,
+    auto_closed: null, edited_by: null, edited_at: null,
+  })
+  backend.projects.find((p) => p.id === 'p-b')!.archived = true
+  await backend.install(page)
+  await page.goto('/login?next=%2Fscan%2Fsiteb1')
+  await logIn(page, 'staff@example.com')
+  await expect(page.getByRole('alert')).toHaveText('This project is closed.')
+  await page.getByRole('link', { name: 'My history' }).click()
+  await expect(page.getByText('Old job')).toBeVisible()
+  await expect(page.getByText('Site B')).toBeVisible()
+})
