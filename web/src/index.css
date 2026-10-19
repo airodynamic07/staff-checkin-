@@ -91,3 +91,8 @@ dialog::backdrop { background: rgba(0, 0, 0, .35); }
   body { background: #fff; }
 }
 .no-underline { text-decoration: none; }
+.qr-sheet { text-align: center; background: #fff; padding: 2rem 1rem; border-radius: var(--radius); }
+.qr-sheet h1 { font-size: 2.2rem; }
+.qr-sheet img { width: 14cm; max-width: 100%; height: auto; }
+.qr-caption { font-size: 1.4rem; font-weight: 600; }
+@media print { .qr-sheet { padding: 1cm 0; } @page { size: A4; margin: 1.5cm; } }

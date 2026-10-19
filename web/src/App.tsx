@@ -7,6 +7,9 @@ import Login from './pages/Login'
 import SetPassword from './pages/SetPassword'
 import Export from './pages/manager/Export'
 import OnSite from './pages/manager/OnSite'
+import People from './pages/manager/People'
+import ProjectQr from './pages/manager/ProjectQr'
+import Projects from './pages/manager/Projects'
 import ProjectSummary from './pages/manager/ProjectSummary'
 import Review from './pages/manager/Review'
 import Timetable from './pages/manager/Timetable'
@@ -49,6 +52,9 @@ export default function App() {
             <Route path="summary" element={<ProjectSummary />} />
             <Route path="review" element={<Review />} />
             <Route path="export" element={<Export />} />
+            <Route path="projects" element={<Projects />} />
+            <Route path="projects/:id/qr" element={<ProjectQr />} />
+            <Route path="people" element={<People />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
