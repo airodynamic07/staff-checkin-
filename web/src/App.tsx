@@ -5,6 +5,8 @@ import { ManagerLayout, StaffLayout } from './components/Layout'
 import { AuthProvider, useAuth } from './lib/auth'
 import Login from './pages/Login'
 import SetPassword from './pages/SetPassword'
+import OnSite from './pages/manager/OnSite'
+import Review from './pages/manager/Review'
 import History from './pages/staff/History'
 import Home from './pages/staff/Home'
 import Scan from './pages/staff/Scan'
@@ -39,7 +41,8 @@ export default function App() {
             <Route path="settings" element={<Settings />} />
           </Route>
           <Route path="/manager" element={<RequireAuth manager><ManagerLayout /></RequireAuth>}>
-            <Route index element={null} />
+            <Route index element={<OnSite />} />
+            <Route path="review" element={<Review />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

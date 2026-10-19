@@ -65,3 +65,13 @@ export function weekRange(date: string): { start: string; end: string } {
   const start = addDays(date, -((dow + 6) % 7))
   return { start, end: addDays(start, 6) }
 }
+
+/** ISO instant → 'YYYY-MM-DDTHH:mm' in Bangkok, for <input type="datetime-local">. */
+export function toBangkokInput(iso: string): string {
+  return new Date(Date.parse(iso) + BANGKOK_OFFSET_MS).toISOString().slice(0, 16)
+}
+
+/** 'YYYY-MM-DDTHH:mm' typed in Bangkok time → ISO instant. */
+export function fromBangkokInput(value: string): string {
+  return new Date(Date.parse(`${value}:00Z`) - BANGKOK_OFFSET_MS).toISOString()
+}
