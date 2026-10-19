@@ -13,7 +13,7 @@
     "@fullcalendar/core": "^6.1.22",
     "@fullcalendar/interaction": "^6.1.22",
     "@fullcalendar/luxon3": "^6.1.22",
-    "@fullcalendar/react": "^7.1.3",
+    "@fullcalendar/react": "^6.1.22",
     "@fullcalendar/timegrid": "^6.1.22",
     "@supabase/supabase-js": "^2.118.0",
     "html5-qrcode": "^2.3.8",

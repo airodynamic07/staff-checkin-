@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import SetPassword from './pages/SetPassword'
 import OnSite from './pages/manager/OnSite'
 import Review from './pages/manager/Review'
+import Timetable from './pages/manager/Timetable'
 import History from './pages/staff/History'
 import Home from './pages/staff/Home'
 import Scan from './pages/staff/Scan'
@@ -42,6 +43,7 @@ export default function App() {
           </Route>
           <Route path="/manager" element={<RequireAuth manager><ManagerLayout /></RequireAuth>}>
             <Route index element={<OnSite />} />
+            <Route path="timetable" element={<Timetable />} />
             <Route path="review" element={<Review />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
