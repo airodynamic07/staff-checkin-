@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { VisitEditDialog } from '../../components/VisitEditDialog'
 import { listProfiles, listVisits } from '../../lib/api'
-import { toCalendarEvents } from '../../lib/calendar'
+import { toCalendarEvents, visibleHours } from '../../lib/calendar'
 import { errorMessage } from '../../lib/errors'
 import { addDays, bangkokDate, durationMinutes, formatDuration, TZ } from '../../lib/time'
 import type { Profile, VisitFull } from '../../lib/types'
@@ -52,6 +52,7 @@ export default function Timetable() {
   }
 
   const total = visits.reduce((s, v) => s + durationMinutes(v), 0)
+  const hours = fullDay ? { min: '00:00', max: '24:00' } : visibleHours(visits)
 
   return (
     <div className="stack">
@@ -81,8 +82,8 @@ export default function Timetable() {
         firstDay={1}
         allDaySlot={false}
         nowIndicator
-        slotMinTime={fullDay ? '00:00' : '06:00'}
-        slotMaxTime={fullDay ? '24:00' : '22:00'}
+        slotMinTime={hours.min}
+        slotMaxTime={hours.max}
         height="auto"
         headerToolbar={{ left: 'prev,next today', center: 'title', right: '' }}
         events={toCalendarEvents(visits)}

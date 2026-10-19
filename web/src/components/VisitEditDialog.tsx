@@ -40,7 +40,9 @@ export function VisitEditDialog({ visit, onSaved, onClose }: Props) {
 
   useEffect(() => {
     const d = ref.current
-    if (d && !d.open && typeof d.showModal === 'function') d.showModal()
+    if (!d || d.open) return
+    if (typeof d.showModal === 'function') d.showModal()
+    else d.setAttribute('open', '')
   }, [])
 
   async function save(e: FormEvent) {
@@ -58,7 +60,7 @@ export function VisitEditDialog({ visit, onSaved, onClose }: Props) {
   }
 
   return (
-    <dialog ref={ref} open onClose={onClose} onCancel={onClose}>
+    <dialog ref={ref} onClose={onClose}>
       <form onSubmit={save} className="stack">
         <h2 style={{ margin: 0 }}>
           <span className="dot" style={{ background: visit.project.color }} />

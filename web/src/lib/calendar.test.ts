@@ -32,3 +32,10 @@ it('flags unedited auto-closed visits only', () => {
   expect(flagged.classNames).toEqual(['flagged'])
   expect(fixed.classNames).toEqual([])
 })
+
+it('widens the visible hours to fit visits outside 06:00–22:00 Bangkok', async () => {
+  const { visibleHours } = await import('./calendar')
+  expect(visibleHours([base])).toEqual({ min: '06:00', max: '22:00' }) // 08:00–12:00
+  expect(visibleHours([{ ...base, check_in_at: '2026-10-19T16:30:00Z', check_out_at: '2026-10-19T16:50:00Z' }])).toEqual({ min: '00:00', max: '24:00' }) // 23:30
+  expect(visibleHours([{ ...base, check_in_at: '2026-10-18T22:00:00Z', check_out_at: '2026-10-19T01:00:00Z' }])).toEqual({ min: '00:00', max: '24:00' }) // 05:00
+})
