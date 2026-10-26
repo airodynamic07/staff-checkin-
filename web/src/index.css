@@ -1,25 +1,45 @@
 :root {
-  --bg: #f6f7f9;
+  /* Site-office palette: blueprint blue on paper, safety amber for anything that needs attention. */
+  --bg: #f3f5f8;
   --surface: #ffffff;
-  --text: #1c2430;
-  --muted: #64707d;
-  --border: #dde2e8;
-  --primary: #1f6feb;
+  --text: #17202c;
+  --muted: #5d6877;
+  --border: #d8dee6;
+  --primary: #1d5fd1;
   --primary-text: #ffffff;
-  --danger: #c62828;
-  --warn-bg: #fff4d6;
-  --warn-text: #7a5300;
-  --ok-bg: #e5f6ea;
-  --ok-text: #1b6b34;
+  --danger: #c0262d;
+  --warn-bg: #fff2cc;
+  --warn-text: #6e4a00;
+  --ok-bg: #e2f4e7;
+  --ok-text: #17602f;
+  --demo-bg: #1d2a3d;
+  --demo-text: #e9eef6;
   --radius: 10px;
-  font-family: system-ui, -apple-system, 'Segoe UI', 'Noto Sans Thai', 'Sarabun', sans-serif;
+  --font: 'IBM Plex Sans Thai', 'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: var(--font);
   color: var(--text);
   background: var(--bg);
-  line-height: 1.45;
+  line-height: 1.5;
   -webkit-text-size-adjust: 100%;
 }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #171e28; --text: #e6ebf2; --muted: #9aa6b5; --border: #2a3442;
+    --primary: #5b95f5; --primary-text: #0b1220; --danger: #ff7b7f;
+    --warn-bg: #3a2e10; --warn-text: #f5d58a; --ok-bg: #12301d; --ok-text: #8fdba6;
+    --demo-bg: #26364d; --demo-text: #e9eef6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #171e28; --text: #e6ebf2; --muted: #9aa6b5; --border: #2a3442;
+  --primary: #5b95f5; --primary-text: #0b1220; --danger: #ff7b7f;
+  --warn-bg: #3a2e10; --warn-text: #f5d58a; --ok-bg: #12301d; --ok-text: #8fdba6;
+  --demo-bg: #26364d; --demo-text: #e9eef6;
+  color-scheme: dark;
+}
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--text); }
 h1 { font-size: 1.4rem; margin: 0 0 .75rem; }
 h2 { font-size: 1.15rem; margin: 1.25rem 0 .5rem; }
 h3 { font-size: 1rem; margin: 1rem 0 .4rem; }
@@ -59,10 +79,11 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* shell */
 .shell { min-height: 100vh; display: flex; flex-direction: column; }
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: .7rem 1rem; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding-block: .7rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
 .brand { font-weight: 700; }
-.content { flex: 1; padding: 1rem; width: 100%; max-width: 960px; margin: 0 auto; padding-bottom: 5rem; }
-.tabbar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--surface); border-top: 1px solid var(--border); z-index: 5; }
+.content { flex: 1; width: 100%; max-width: 960px; margin: 0 auto; padding-top: 1rem; padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); min-width: 0; }
+.tabbar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--surface); border-top: 1px solid var(--border); z-index: 5; padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 .tabbar a { flex: 1; text-align: center; padding: .75rem .25rem; text-decoration: none; color: var(--muted); font-size: .85rem; }
 .tabbar a.active { color: var(--primary); font-weight: 600; }
 .sidenav { display: flex; gap: .25rem; overflow-x: auto; padding: .5rem 1rem; background: var(--surface); border-bottom: 1px solid var(--border); }
@@ -96,3 +117,23 @@ dialog::backdrop { background: rgba(0, 0, 0, .35); }
 .qr-sheet img { width: 14cm; max-width: 100%; height: auto; }
 .qr-caption { font-size: 1.4rem; font-weight: 600; }
 @media print { .qr-sheet { padding: 1cm 0; } @page { size: A4; margin: 1.5cm; } }
+
+/* demo */
+.demo-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem .75rem; background: var(--demo-bg); color: var(--demo-text); font-size: .85rem; padding-block: .45rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.demo-banner button { padding: .25rem .7rem; font-size: .82rem; }
+.auth-page .demo-banner { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; }
+.auth-page { padding-top: 4rem; }
+.demo-pick { padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); }
+button.pick { display: flex; flex-direction: column; align-items: flex-start; gap: .15rem; text-align: left; padding: .8rem 1rem; }
+button.pick span { font-weight: 600; }
+button.pick small { opacity: .85; font-weight: 400; }
+button.qr-sim { display: flex; align-items: center; justify-content: flex-start; gap: .25rem; text-align: left; font-size: 1.05rem; }
+table.compact th, table.compact td { font-size: .82rem; padding: .35rem .5rem; white-space: nowrap; }
+.tabbar a, .sidenav a, button { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.fc { --fc-border-color: var(--border); --fc-page-bg-color: var(--surface); --fc-neutral-bg-color: var(--bg); --fc-today-bg-color: color-mix(in srgb, var(--primary) 8%, transparent); color: var(--text); }
+.fc .fc-button-primary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.fc .fc-button-primary:disabled { background: var(--bg); color: var(--muted); }
+.fc .fc-toolbar-title { font-size: 1.05rem; }
+.fc-scroller { overflow-x: auto !important; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

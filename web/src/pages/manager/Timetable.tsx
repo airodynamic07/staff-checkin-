@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { VisitEditDialog } from '../../components/VisitEditDialog'
+import { IS_DEMO } from '../../demo'
 import { listProfiles, listVisits } from '../../lib/api'
 import { toCalendarEvents, visibleHours } from '../../lib/calendar'
 import { errorMessage } from '../../lib/errors'
@@ -76,6 +77,10 @@ export default function Timetable() {
       <FullCalendar
         plugins={[timeGridPlugin, interactionPlugin, luxonPlugin]}
         initialView="timeGridWeek"
+        // The demo's sample visits end yesterday, so open on that week.
+        initialDate={IS_DEMO ? addDays(bangkokDate(new Date()), -1) : undefined}
+        handleWindowResize
+        windowResizeDelay={50}
         timeZone={TZ}
         locales={[thLocale, enGbLocale]}
         locale={i18n.language === 'th' ? 'th' : 'en-gb'}

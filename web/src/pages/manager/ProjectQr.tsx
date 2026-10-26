@@ -2,6 +2,7 @@ import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
+import { IS_DEMO } from '../../demo'
 import { getProject } from '../../lib/api'
 import { errorMessage } from '../../lib/errors'
 import { projectQrUrl } from '../../lib/qr'
@@ -33,7 +34,11 @@ export default function ProjectQr() {
       <div className="row no-print">
         <Link to="/manager/projects">‹ {t('app.back')}</Link>
         <span className="spacer" />
-        <button className="primary" onClick={() => window.print()}>{t('projects.print')}</button>
+        {IS_DEMO ? (
+          <span className="muted">{t('demo.printHint')}</span>
+        ) : (
+          <button className="primary" onClick={() => window.print()}>{t('projects.print')}</button>
+        )}
       </div>
       <div className="qr-sheet">
         <h1>{project.name}</h1>

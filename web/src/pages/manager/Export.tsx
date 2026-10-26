@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DateRange } from '../../components/DateRange'
+import { IS_DEMO } from '../../demo'
 import { listProfiles, listProjects, listVisits } from '../../lib/api'
 import { errorMessage } from '../../lib/errors'
 import { buildExportRows, downloadBlob, toCsv, toXlsx } from '../../lib/export'
@@ -17,6 +18,7 @@ export default function Export() {
   const [people, setPeople] = useState<Profile[]>([])
   const [projects, setProjects] = useState<Project[]>([])
   const [busy, setBusy] = useState(false)
+  const [preview, setPreview] = useState<string[][] | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -31,6 +33,10 @@ export default function Export() {
     try {
       const visits = await listVisits({ from, to, userId: userId || undefined, projectId: projectId || undefined })
       const rows = buildExportRows(visits, i18n.language as Lang)
+      if (IS_DEMO) {
+        setPreview(rows)
+        return
+      }
       const blob = kind === 'csv' ? new Blob([toCsv(rows)], { type: 'text/csv;charset=utf-8' }) : await toXlsx(rows)
       downloadBlob(blob, `checkins_${from}_${to}.${kind}`)
     } catch (e) {
@@ -67,6 +73,21 @@ export default function Export() {
           <button disabled={busy} onClick={() => void download('csv')}>{t('manager.downloadCsv')}</button>
         </div>
       </div>
+      {preview && (
+        <div className="stack">
+          <p className="warning">{t('demo.exportHint')} <strong>{t('demo.exportRows', { count: preview.length - 1 })}</strong></p>
+          <div className="table-wrap">
+            <table className="compact">
+              <thead><tr>{preview[0].map((h) => <th key={h}>{h}</th>)}</tr></thead>
+              <tbody>
+                {preview.slice(1, 51).map((r, i) => (
+                  <tr key={i}>{r.map((c, j) => <td key={j} className={j === 5 ? 'num' : ''}>{c}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:demo": "tsc -b && vite build --mode demo"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.22",
@@ -41,6 +42,7 @@
     "oxlint": "^1.88.0",
     "typescript": "~7.0.2",
     "vite": "^8.3.4",
+    "vite-plugin-singlefile": "^2.3.4",
     "vitest": "^5.0.5"
   }
 }

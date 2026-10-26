@@ -1,5 +1,6 @@
 // Every call the app makes to Supabase. Errors are thrown as ApiError with the
 // short code raised by the database functions (see supabase/migrations).
+import { IS_DEMO } from '../demo'
 import { fetchAllPages } from './paging'
 import { bangkokMidnight, addDays } from './time'
 import { supabase } from './supabase'
@@ -128,6 +129,7 @@ export async function listUnreviewedAutoClosed(): Promise<VisitFull[]> {
 }
 
 export function subscribeVisits(onChange: () => void): () => void {
+  if (IS_DEMO) return () => undefined // no live updates in the demo
   const channel = supabase
     .channel(`visits-${Math.random().toString(36).slice(2)}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'visits' }, onChange)

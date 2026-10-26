@@ -75,3 +75,7 @@ deno test supabase/functions/invite/validate.test.ts
    - `web/public/_redirects` (Netlify) and `web/vercel.json` (Vercel) already make links like `/scan/abc123` work.
 3. **First manager.** In Supabase → Authentication → **Add user**, create your own account, then run the `update public.profiles set role = 'manager' …` SQL above. Log in to the app, open **Manager → People**, and invite everyone else. They get an email to set their password.
 4. **QR codes.** Open **Manager → Projects**, add each site, then use **Print QR code** and stick the A4 sheet up at the site.
+
+## Demo build
+
+`cd web && npm run build:demo` builds `web/dist-demo/index.html`: one self-contained file with sample staff, sites and two weeks of visits, where the backend runs inside the page (`web/src/demo`). It has one-tap staff and manager logins, simulated QR scans instead of the camera, and an on-screen export preview. Changes stay in that browser; **Reset demo** starts over.

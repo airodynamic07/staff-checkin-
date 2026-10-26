@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../lib/auth'
+import { DemoBanner } from './DemoBanner'
 import { LanguageSwitch } from './LanguageSwitch'
 
 export function StaffLayout() {
@@ -12,6 +13,7 @@ export function StaffLayout() {
         <span className="brand">{t('app.name')}</span>
         <LanguageSwitch />
       </header>
+      <DemoBanner />
       <main className="content">
         <Outlet />
       </main>
@@ -49,6 +51,7 @@ export function ManagerLayout() {
         ))}
         <NavLink to="/">{t('nav.staffArea')}</NavLink>
       </nav>
+      <DemoBanner />
       <main className="content">
         <Outlet />
       </main>

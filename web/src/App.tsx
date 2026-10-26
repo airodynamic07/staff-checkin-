@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { IS_DEMO } from './demo'
 import { ManagerLayout, StaffLayout } from './components/Layout'
 import { AuthProvider, useAuth } from './lib/auth'
 import Login from './pages/Login'
@@ -32,10 +33,13 @@ function RequireAuth({ children, manager = false }: { children: ReactNode; manag
   return <>{children}</>
 }
 
+// The demo runs inside a claude.ai page, where the address bar can't follow the app.
+const Router = IS_DEMO ? MemoryRouter : BrowserRouter
+
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/set-password" element={<SetPassword />} />
@@ -58,7 +62,7 @@ export default function App() {
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </AuthProvider>
   )
 }

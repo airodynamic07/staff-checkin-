@@ -1,5 +1,6 @@
 import type { Session } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { IS_DEMO } from '../demo'
 import { applyLanguage } from '../i18n'
 import { supabase } from './supabase'
 import type { Profile } from './types'
@@ -26,7 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const { data } = await supabase.from('profiles').select('*').eq('id', s.user.id).single<Profile>()
     setProfile(data ?? null)
-    if (data) await applyLanguage(data.language)
+    // In the demo the language picked on the login screen stays.
+    if (data && !IS_DEMO) await applyLanguage(data.language)
   }, [])
 
   useEffect(() => {
